@@ -3,10 +3,9 @@ import { StyleSheet } from 'react-native';
 export const styles = StyleSheet.create({
   container: {
     position: 'relative',
-    marginRight: 12,
     height: 160,
     width: 100,
-    justifyContent: 'space-between',
+    marginHorizontal: 8,
   },
   image: {
     position: 'absolute',

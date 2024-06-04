@@ -17,7 +17,7 @@ export const fetchTrendingVideos = async (typeTrending: TrendingEnum) => {
     const response = await axios.request(options);
     return response.data.data;
   } catch (error) {
-    console.log('error: ', error?.message);
+    console.error(error);
     return [];
   }
 };

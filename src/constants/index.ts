@@ -1,23 +1,15 @@
 import { ImageSourcePropType } from 'react-native';
 
-import { ShortVideoCardType } from '~/components/short-video-card/types';
-
-export const rapidApiKey = 'f9ba8c5bc9msh7a6d4e8bc11c86dp1c4422jsne4da5edfaa3a';
+import { ShortVideoCardDataType, ShortVideoCardType } from '~/components/short-video-card/types';
 
 // below is the api used from rapid api hub
 
 // https://rapidapi.com/ytdlfree/api/youtube-v3-alternative/
 
 export const categories = [
-  'All',
-
-  'Gaming',
-
   'React Routers',
 
-  'Music',
-
-  'John Snow',
+  'Info Week',
 
   'Live',
 
@@ -32,7 +24,7 @@ export const categories = [
   'Others',
 ];
 
-export const shortVideos: ShortVideoCardType[] = [
+export const shortVideos: ShortVideoCardDataType[] = [
   {
     id: 2,
 
@@ -84,7 +76,7 @@ export const shortVideos: ShortVideoCardType[] = [
   },
 ];
 
-export const videos = [
+export const videost = [
   {
     id: 1,
 

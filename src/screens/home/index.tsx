@@ -1,31 +1,23 @@
-import { StatusBar } from 'expo-status-bar';
 import React, { useEffect, useState } from 'react';
-import {
-  View,
-  Text,
-  Image,
-  ScrollView,
-  TouchableOpacity,
-  FlatList,
-  //   SafeAreaView,
-} from 'react-native';
+import { View, Text, Image, ScrollView, FlatList } from 'react-native';
 import * as Icon from 'react-native-feather';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { styles } from './styles';
-import { categories, shortVideos } from '../../constants/';
+import { TrendCategory } from './trend-category';
+import { shortVideos } from '../../constants/';
 import { themeColors } from '../../theme/index';
 
 import { ShortVideoCard } from '~/components/short-video-card';
 import { Spinner } from '~/components/spinner';
 import { VideoCard } from '~/components/video-card';
-import { TrendingEnum } from '~/services/types';
+import { TrendingEnum, VideoTrendResponse } from '~/services/types';
 import { fetchTrendingVideos } from '~/services/youtube';
 
 export function HomeScreen() {
   const [activeCategory, setActiveCategory] = useState<TrendingEnum>(TrendingEnum.now);
-  const [videos, setVideos] = useState([]);
-  const [videos1, setVideos1] = useState([]);
+  const [videos, setVideos] = useState<VideoTrendResponse['data']>([]);
+  const [videos1, setVideos1] = useState<VideoTrendResponse['data']>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -45,11 +37,9 @@ export function HomeScreen() {
   }, [videos]);
 
   return (
-    <View style={[styles.container, { backgroundColor: themeColors.bg }]}>
-      <StatusBar style="light" />
-
+    <SafeAreaView style={[styles.container, { backgroundColor: themeColors.bg }]}>
       {/* Logo e ícone de perfil */}
-      <SafeAreaView style={styles.header}>
+      <View style={styles.header}>
         <View style={styles.logoContainer}>
           <Image source={require('../../../assets/icons/youtubeIcon.png')} style={styles.logo} />
           <Text style={styles.logoText}>YouTube</Text>
@@ -59,34 +49,12 @@ export function HomeScreen() {
           <Icon.Bell stroke="white" strokeWidth={1.2} height={22} style={styles.icon} />
           <Icon.Search stroke="white" strokeWidth={1.2} height={22} style={styles.icon} />
         </View>
-      </SafeAreaView>
+      </View>
 
       <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
         {/* Categorias */}
-        <View style={styles.categoryContainer}>
-          <ScrollView
-            style={styles.categoryScroll}
-            horizontal
-            showsHorizontalScrollIndicator={false}>
-            {TrendingEnum &&
-              Object.values(TrendingEnum).map((category, index) => {
-                const isActive = category === activeCategory;
-                return (
-                  <TouchableOpacity
-                    onPress={() => setActiveCategory(category)}
-                    key={index}
-                    style={[
-                      styles.categoryButton,
-                      { backgroundColor: isActive ? 'white' : 'rgba(255,255,255,0.1)' },
-                    ]}>
-                    <Text style={[styles.categoryText, isActive && styles.activeCategoryText]}>
-                      {category}
-                    </Text>
-                  </TouchableOpacity>
-                );
-              })}
-          </ScrollView>
-        </View>
+
+        <TrendCategory activeCategory={activeCategory} setActiveCategory={setActiveCategory} />
         {isLoading ? (
           <View>
             <Spinner />
@@ -94,7 +62,17 @@ export function HomeScreen() {
         ) : (
           <>
             {/* Vídeo Sugerido */}
-            {videos && videos[0] && <VideoCard video={videos[0]} />}
+            {Boolean(videos.length) && (
+              <VideoCard
+                channelThumbnail={videos[0].channelThumbnail[0].url}
+                channelTitle={videos[0].channelTitle}
+                title={videos[0].title}
+                lengthText={videos[0].lengthText}
+                publishedText={videos[0].publishedText}
+                thumbnail={videos[0].thumbnail[0].url}
+                viewCount={videos[0].viewCount}
+              />
+            )}
 
             {/* Shorts */}
             <View style={styles.shortsContainer}>
@@ -105,26 +83,30 @@ export function HomeScreen() {
                 />
                 <Text style={styles.shortsText}>Shorts</Text>
               </View>
-              <ScrollView
-                horizontal
-                showsHorizontalScrollIndicator={false}
-                style={styles.shortsScroll}>
-                {shortVideos.map((item, index) => (
-                  <ShortVideoCard {...item} key={`${index}-SHORTS-${item.id}`} />
-                ))}
-              </ScrollView>
+              <ShortVideoCard data={shortVideos} />
             </View>
 
             {/* Lista de Vídeos */}
             <FlatList
+              scrollEnabled={false}
               data={videos1}
-              renderItem={({ item }) => <VideoCard video={item} />}
+              renderItem={({ item }) => (
+                <VideoCard
+                  channelThumbnail={item.channelThumbnail[0].url}
+                  channelTitle={item.channelTitle}
+                  title={item.title}
+                  lengthText={item.lengthText}
+                  publishedText={item.publishedText}
+                  thumbnail={item.thumbnail[0].url}
+                  viewCount={item.viewCount}
+                />
+              )}
               keyExtractor={(item, index) => index.toString()}
               showsVerticalScrollIndicator={false}
             />
           </>
         )}
       </ScrollView>
-    </View>
+    </SafeAreaView>
   );
 }
